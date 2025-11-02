@@ -4,7 +4,13 @@ import { PermissionVO } from './permission.vo';
 import { PermissionsVO } from './permissions.vo';
 
 export class RoleVO {
-  // private constructor(private readonly value: RoleType) {}
+  constructor(
+    private readonly value: RoleType,
+    private permissions: PermissionsVO = PermissionsVO.create([]),
+  ) {
+    if (!value || value.trim() === '')
+      throw new InvalidRoleDomainException(value);
+  }
 
   static create(role: RoleType): RoleVO {
     const validRoles: RoleType[] = ['ADMIN', 'USER', 'MERCHANT'];
@@ -12,14 +18,6 @@ export class RoleVO {
       throw new InvalidRoleDomainException(`Invalid role: ${role}`);
     }
     return new RoleVO(role);
-  }
-
-  constructor(
-    private readonly value: string,
-    private permissions: PermissionsVO = PermissionsVO.create([]),
-  ) {
-    if (!value || value.trim() === '')
-      throw new InvalidRoleDomainException(value);
   }
 
   getValue(): string {
