@@ -4,15 +4,7 @@ export class PermissionsVO {
   private constructor(private readonly permissions: PermissionVO[]) {}
 
   static create(permissions: PermissionVO[]): PermissionsVO {
-    return new PermissionsVO([...permissions]);
-  }
-
-  getValues(): PermissionVO[] {
-    return [...this.permissions];
-  }
-
-  hasPermission(permission: PermissionVO): boolean {
-    return this.permissions.some((p) => p.equals(permission));
+    return new PermissionsVO(permissions);
   }
 
   addPermission(permission: PermissionVO): PermissionsVO {
@@ -26,5 +18,13 @@ export class PermissionsVO {
     return new PermissionsVO(
       this.permissions.filter((p) => !p.equals(permission)),
     );
+  }
+
+  hasPermission(permission: PermissionVO): boolean {
+    return this.permissions.some((p) => p.equals(permission));
+  }
+
+  getValues(): PermissionVO[] {
+    return this.permissions;
   }
 }
