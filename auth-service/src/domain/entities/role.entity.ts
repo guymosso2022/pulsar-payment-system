@@ -8,7 +8,23 @@ export class Role {
     private readonly name: string,
     private permissions: PermissionsVO = PermissionsVO.create([]),
     private readonly description?: string,
+    public createdAt?: Date,
+    public updatedAt?: Date,
   ) {}
+
+  public static create(
+    id: RoleIdVO,
+    name: string,
+    permissions?: PermissionsVO,
+    description?: string,
+  ): Role {
+    return new Role(
+      id,
+      name,
+      permissions ?? PermissionsVO.create([]),
+      description,
+    );
+  }
 
   public addPermission(permission: PermissionVO) {
     this.permissions = this.permissions.addPermission(permission);

@@ -1,5 +1,6 @@
-import { UserAlreadyBlockedDomainException } from '../exceptions/user-already-blocked-domain.exception';
+import { InvalidPasswordDomainException } from '../exceptions/invalid-password.domain-exception';
 import { UserAlreadyActivatedDomainException } from '../exceptions/user-already-activated-domain.exception';
+import { UserAlreadyBlockedDomainException } from '../exceptions/user-already-blocked-domain.exception';
 import { EmailVo } from '../value-objects/email.vo';
 import { PermissionVO } from '../value-objects/permission.vo';
 import { PermissionsVO } from '../value-objects/permissions.vo';
@@ -7,7 +8,6 @@ import { RoleVO } from '../value-objects/role.vo';
 import { RolesVO } from '../value-objects/roles.vo';
 import { UserStatusVO } from '../value-objects/status.vo';
 import { UserIdVO } from '../value-objects/user-id.vo';
-import { InvalidPasswordDomainException } from '../exceptions/invalid-password.domain-exception';
 
 export class User {
   private password: string;
@@ -22,8 +22,34 @@ export class User {
     private roles: RolesVO = RolesVO.create([]),
     private permissions: PermissionsVO = PermissionsVO.create([]),
     private status: UserStatusVO = UserStatusVO.create('ACTIVE'),
+    public createdAt?: Date,
+    public updatedAt?: Date,
   ) {
     this.setPassword(password);
+  }
+
+  public static create(
+    id: UserIdVO,
+    email: EmailVo,
+    password: string,
+    firstName: string,
+    lastName: string,
+    phoneNumber: string,
+    roles?: RolesVO,
+    permissions?: PermissionsVO,
+    status?: UserStatusVO,
+  ): User {
+    return new User(
+      id,
+      email,
+      password,
+      firstName,
+      lastName,
+      phoneNumber,
+      roles ?? RolesVO.create([]),
+      permissions ?? PermissionsVO.create([]),
+      status ?? UserStatusVO.create('ACTIVE'),
+    );
   }
 
   public addRole(role: RoleVO) {
