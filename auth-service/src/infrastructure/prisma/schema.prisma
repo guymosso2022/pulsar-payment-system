@@ -31,3 +31,12 @@ model User {
   updatedAt    DateTime?     @updatedAt
   @@map("user")
 }
+
+model Role {
+  id          String      @id @db.Uuid
+  name        String      @unique @db.VarChar()
+  description String?     @db.VarChar()
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+   @@map("role")
+}
