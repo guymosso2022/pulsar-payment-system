@@ -25,4 +25,8 @@ export class RolesVO {
   removeRole(role: RoleVO): RolesVO {
     return new RolesVO(this.roles.filter((r) => !r.equals(role)));
   }
+
+  public getRoles(): RoleVO[] {
+    return this.roles;
+  }
 }

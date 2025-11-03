@@ -3,24 +3,20 @@ import { UserAlreadyActivatedDomainException } from '../exceptions/user-already-
 import { UserAlreadyBlockedDomainException } from '../exceptions/user-already-blocked-domain.exception';
 import { EmailVo } from '../value-objects/email.vo';
 import { PermissionVO } from '../value-objects/permission.vo';
-import { PermissionsVO } from '../value-objects/permissions.vo';
 import { RoleVO } from '../value-objects/role.vo';
 import { RolesVO } from '../value-objects/roles.vo';
 import { UserStatusVO } from '../value-objects/status.vo';
 import { UserIdVO } from '../value-objects/user-id.vo';
 
 export class User {
-  private password: string;
-
   constructor(
     private readonly id: UserIdVO,
     private readonly email: EmailVo,
-    password: string,
+    private password: string,
     private firstName: string,
     private lastName: string,
     private phoneNumber: string,
     private roles: RolesVO = RolesVO.create([]),
-    private permissions: PermissionsVO = PermissionsVO.create([]),
     private status: UserStatusVO = UserStatusVO.create('ACTIVE'),
     public createdAt?: Date,
     public updatedAt?: Date,
@@ -36,7 +32,6 @@ export class User {
     lastName: string,
     phoneNumber: string,
     roles?: RolesVO,
-    permissions?: PermissionsVO,
     status?: UserStatusVO,
   ): User {
     return new User(
@@ -47,7 +42,6 @@ export class User {
       lastName,
       phoneNumber,
       roles ?? RolesVO.create([]),
-      permissions ?? PermissionsVO.create([]),
       status ?? UserStatusVO.create('ACTIVE'),
     );
   }
@@ -64,23 +58,16 @@ export class User {
     return this.roles.hasRole(role);
   }
 
-  public addPermission(permission: PermissionVO) {
-    this.permissions = this.permissions.addPermission(permission);
-  }
-
-  public removePermission(permission: PermissionVO) {
-    this.permissions = this.permissions.removePermission(permission);
-  }
-
   public hasPermission(permission: PermissionVO): boolean {
-    return this.permissions.hasPermission(permission);
+    return this.roles
+      .getRoles()
+      .some((role) => role.getPermissions().hasPermission(permission));
   }
 
   public block() {
     if (this.status.isBlocked()) {
       throw new UserAlreadyBlockedDomainException(this.id.toString());
     }
-
     this.status = UserStatusVO.create('BLOCKED');
   }
 
@@ -88,7 +75,6 @@ export class User {
     if (this.status.isActive()) {
       throw new UserAlreadyActivatedDomainException(this.id.toString());
     }
-
     this.status = UserStatusVO.create('ACTIVE');
   }
 
@@ -122,10 +108,6 @@ export class User {
 
   getRoles(): RolesVO {
     return this.roles;
-  }
-
-  getPermissions(): PermissionsVO {
-    return this.permissions;
   }
 
   getStatus(): UserStatusVO {
