@@ -36,7 +36,16 @@ model Role {
   id          String      @id @db.Uuid
   name        String      @unique @db.VarChar()
   description String?     @db.VarChar()
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-   @@map("role")
+  createdAt   DateTime?    @default(now())
+  updatedAt   DateTime?    @updatedAt
+  @@map("role")
+}
+
+model Permission {
+  id          String   @id @db.Uuid
+  name        String   @unique @db.VarChar()
+  description String?  @db.VarChar()
+  createdAt   DateTime? @default(now())
+  updatedAt   DateTime? @updatedAt
+  @@map("permission")
 }
