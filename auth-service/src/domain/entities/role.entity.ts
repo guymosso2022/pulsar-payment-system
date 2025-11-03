@@ -6,11 +6,13 @@ export class Role {
   constructor(
     private readonly id: RoleIdVO,
     private readonly name: string,
-    private permissions: PermissionsVO = PermissionsVO.create([]),
+    private permissions?: PermissionsVO,
     private readonly description?: string,
     public createdAt?: Date,
     public updatedAt?: Date,
-  ) {}
+  ) {
+    this.permissions = permissions ?? PermissionsVO.create([]);
+  }
 
   public static create(
     id: RoleIdVO,
@@ -27,15 +29,15 @@ export class Role {
   }
 
   public addPermission(permission: PermissionVO) {
-    this.permissions = this.permissions.addPermission(permission);
+    this.permissions = this.permissions!.addPermission(permission);
   }
 
   public removePermission(permission: PermissionVO) {
-    this.permissions = this.permissions.removePermission(permission);
+    this.permissions = this.permissions!.removePermission(permission);
   }
 
   public getPermissions(): PermissionsVO {
-    return this.permissions;
+    return this.permissions!;
   }
 
   getId(): RoleIdVO {
