@@ -63,4 +63,52 @@ export class PrismaPermissionRepository implements IPermissionRepositoryPort {
 
     return permission;
   }
+
+  async findAll(
+    skip?: number,
+    limit?: number,
+  ): Promise<{
+    data: Permission[];
+    meta: {
+      firstPage: number;
+      total: number;
+      lastPage: number;
+      currentPage: number;
+      itemsPerPage: number;
+    };
+  }> {
+    const itemsPerPage = limit ?? 20;
+    const skipValue = skip ?? 0;
+    const currentPage = Math.floor(skipValue / itemsPerPage) + 1;
+
+    const total = await this.prisma.permission.count();
+    const records = await this.prisma.permission.findMany({
+      skip: skipValue,
+      take: itemsPerPage,
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const data = records.map((record) => {
+      const permissionId = PermissionIdVO.create(record.id);
+      const permission = Permission.create(
+        permissionId,
+        record.name,
+        record.description ?? undefined,
+      );
+      permission.createdAt = record.createdAt ?? new Date();
+      permission.updatedAt = record.updatedAt ?? new Date();
+      return permission;
+    });
+
+    return {
+      data,
+      meta: {
+        firstPage: 1,
+        total,
+        lastPage: Math.ceil(total / itemsPerPage) || 1,
+        currentPage,
+        itemsPerPage,
+      },
+    };
+  }
 }
