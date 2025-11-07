@@ -26,7 +26,7 @@ model User {
   lastName     String       @db.VarChar() @map("last_name")
   phoneNumber  String       @db.VarChar() @map(" phone_number")
   status       String       @default("ACTIVE") @db.VarChar()
-  roles       UserRole[]
+  roles       Role[]    @relation("UserRoles")
   createdAt    DateTime?     @default(now())
   updatedAt    DateTime?     @updatedAt
   @@map("user")
@@ -35,8 +35,8 @@ model User {
 model Role {
   id          String      @id @db.Uuid
   name        String      @unique @db.VarChar()
-  permissions RolePermission[]
-  users       UserRole[]
+  users       User[]       @relation("UserRoles")
+  permissions Permission[] @relation("RolePermissions")
   description String?     @db.VarChar()
   createdAt   DateTime?    @default(now())
   updatedAt   DateTime?    @updatedAt
@@ -46,29 +46,10 @@ model Role {
 model Permission {
   id          String   @id @db.Uuid
   name        String   @unique @db.VarChar()
-  roles       RolePermission[]
+  roles       Role[]   @relation("RolePermissions")
   description String?  @db.VarChar()
   createdAt   DateTime? @default(now())
   updatedAt   DateTime? @updatedAt
   @@map("permission")
 }
 
-model UserRole {
-  userId String   @db.VarChar() @map("user_id")
-  roleId String   @db.VarChar() @map("role_id")
-
-  user   User @relation(fields: [userId], references: [id])
-  role   Role @relation(fields: [roleId], references: [id])
-
-  @@id([userId, roleId])
-}
-
-model RolePermission {
-  roleId       String  @db.VarChar() @map("role_id")
-  permissionId String  @db.VarChar() @map("permission_id")
-
-  role       Role       @relation(fields: [roleId], references: [id])
-  permission Permission @relation(fields: [permissionId], references: [id])
-
-  @@id([roleId, permissionId])
-}

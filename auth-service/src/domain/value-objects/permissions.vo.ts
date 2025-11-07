@@ -31,4 +31,8 @@ export class PermissionsVO {
   public getPermissions(): PermissionVO[] {
     return this.permissions;
   }
+
+  getIds(): PermissionVO[] {
+    return this.permissions;
+  }
 }
